@@ -1,0 +1,25 @@
+// custom variable values
+$primary: rgb(182, 227, 212);
+$secondary: #e7a191;
+$success:    rgb(92,212,196);
+// $info:          $cyan !default;
+// $warning:       $yellow !default;
+// $danger:        $red !default;
+// $light:         $gray-100 !default;
+// $dark:          $gray-900 !default;
+
+// import the functions & variables
+@import '../node_modules/bootstrap/scss/_functions';
+@import '../node_modules/bootstrap/scss/_variables';
+
+// custom theme colours
+$custom-theme-colors: (
+  'altlight': #f2ebfa,
+  'altdark': #522192
+);
+
+// merge the maps to add new theme colors
+$theme-colors: map-merge($custom-theme-colors, $theme-colors);
+
+// import bootstrap
+@import '../node_modules/bootstrap/scss/bootstrap';
