@@ -4,22 +4,18 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import 'css/main.min.css'
 import Navbar from '../components/navBar'
-import Image from 'next/image'
-import search from '../../public/assets/search-icon.png'
-import verifyToken from '../utils/verify-token'
 import Footer from '../components/footer'
 
-export default function PostPage() {
+export default function EmployeePage() {
   const router = useRouter()
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [searchData, setSearchData] = useState('all')
-  const [postedAtSorting, setPostedAtSorting] = useState('sorting')
-  const [tagsSorting, setTagsSorting] = useState('all')
+  const [salarySorting, setSalarySorting] = useState('sorting')
+  const [departmentsSorting, setDepartmentsSorting] = useState('all')
   const [allTags, setAllTags] = useState('')
   const [totalPages, setTotalPages] = useState('')
-  const pageSize = 34
-  const getByTitleApiUrl = `http://localhost:4000/posts/getPosts`
+  const pageSize = 10
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1)
@@ -30,52 +26,22 @@ export default function PostPage() {
   }
 
   // Function to navigate to a post deatail page
-  const navigateToPostDatail = (postId: string) => {
-    router.push(`/post/${postId}`)
+  const navigateToEmployeeDetail = (id: string) => {
+    router.push(`/employee/${id}`)
   }
 
-  const fetchData = async (apiUrl) => {
-    try {
-      const token = await verifyToken()
-
-      // Fetch data with the token attached
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-
-      // Parse the JSON response
-      const result = await response.json()
-
-      // Check if the request was successful
-      if (!response.ok) {
-        const errorMessage = result.message
-        console.log('errorMessage', errorMessage)
-        throw new Error('Failed to fetch data')
-      }
-
-      //Set State
-      setData(result.posts)
-      setTotalPages(result.totalPages)
-    } catch (err) {
-      console.log('err', err)
-    }
+  const navigateToCreateEmployee = () => {
+    router.push('/create')
   }
 
   useEffect(() => {
-    const fetchTags = async () => {
+    const fetchDepartments = async () => {
       try {
-        const token = await verifyToken()
-        const apiUrlToFetchTags = 'http://localhost:4000/posts/getAllTags'
-        const response = await fetch(apiUrlToFetchTags, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+        // API endpoint for fetch all departments in db
+        const apiUrlToFetchDepartments =
+          'http://localhost:4000/employees/getAllDepartments'
+        const response = await fetch(apiUrlToFetchDepartments, {
+          method: 'GET'
         })
 
         // Parse the JSON response
@@ -85,10 +51,10 @@ export default function PostPage() {
         if (!response.ok) {
           const errorMessage = result.message
           console.log('errorMessage', errorMessage)
-          throw new Error('Failed to fetch data')
+          throw new Error('Failed to fetch departments')
         }
 
-        // Add "all" to the array of tags
+        // Add "all" to the array of departments
         const tagsWithAll: any = ['all', ...result]
 
         setAllTags(tagsWithAll)
@@ -97,33 +63,66 @@ export default function PostPage() {
       }
     }
     // Call the fetchTahs
-    fetchTags()
+    fetchDepartments()
   }, [])
 
   useEffect(() => {
-    const apiUrlToFetch = `${getByTitleApiUrl}/${searchData}/${tagsSorting}/${postedAtSorting}/${currentPage}/${pageSize}`
+    async function fetchData() {
+      // API endpoint for get all employee upon filter
+      const getAllEmployeesApiUrl =
+        'http://localhost:4000/employees/getAllEmployees'
 
-    if (searchData === '') {
-      setSearchData('all')
+      try {
+        if (searchData === '') {
+          setSearchData('all')
+        }
+
+        const requestBody = {
+          firstName: searchData,
+          department: departmentsSorting,
+          orderBy: salarySorting,
+          page: currentPage,
+          pageSize
+        }
+
+        const response = await fetch(getAllEmployeesApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+
+        // Handle the response
+        const result = await response.json()
+
+        // Check if the request was successful
+        if (!response.ok) {
+          const errorMessage = result.message
+          console.log('errorMessage', errorMessage)
+          throw new Error('Failed to fetch data')
+        }
+
+        //Set State
+        setData(result.employees)
+        setTotalPages(result.totalPages)
+        // Set state or perform other actions with the fetched data
+        console.log(data)
+      } catch (error) {
+        // Handle errors (e.g., log or show an error message)
+        console.error('Error fetching data:', error)
+      }
     }
 
-    fetchData(apiUrlToFetch)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    currentPage,
-    pageSize,
-    searchData,
-    tagsSorting,
-    postedAtSorting,
-    getByTitleApiUrl,
-    totalPages
-  ])
+    fetchData()
+  }, [currentPage, pageSize, searchData, departmentsSorting, salarySorting])
 
   return (
     <>
       <Navbar />
       <div style={{ paddingLeft: '15rem', paddingRight: '15rem' }}>
-        {/* Search part */}
+        {/* 
+         part */}
         <div className="container mt-5">
           <div
             className="input-group justify-content-center border border-primary border-3 p-5 "
@@ -135,7 +134,7 @@ export default function PostPage() {
           >
             <div>
               {/* Text above search box */}
-              <p className="mb-2">Search by title</p>
+              <p className="mb-2">Search by firstName</p>
               <div
                 className="form-outline border border-primary border-2 rounded"
                 data-mdb-input-init
@@ -146,7 +145,7 @@ export default function PostPage() {
                   type="text"
                   id="form1"
                   className="form-control form-control-lg border-0"
-                  placeholder="Enter a title to search"
+                  placeholder="Enter firstName to search"
                   onChange={(e) => setSearchData(e.target.value)}
                   onBlur={(e) => {
                     const trimmedValue = e.target.value.trim()
@@ -160,18 +159,11 @@ export default function PostPage() {
                 />
               </div>
             </div>
-            <Image
-              src={search}
-              width={30}
-              height={30}
-              className="rounded-5 mt-5"
-              alt="SkinX Logo"
-            />
 
             {/* Dropdowns */}
             <div className="row mt-3">
               <div className="col">
-                <p className="mb-2">Type of tag</p>
+                <p className="mb-2">Department</p>
                 <div className="dropdown">
                   <button
                     className="btn dropdown-toggle border border-secondary border-2 rounded"
@@ -184,21 +176,24 @@ export default function PostPage() {
                       width: '200px'
                     }}
                   >
-                    {tagsSorting}
+                    {departmentsSorting}
                   </button>
                   <ul className="dropdown-menu" style={{ fontSize: '1.2rem' }}>
                     {Array.isArray(allTags) && allTags.length > 0 ? (
-                      allTags.map((tag, index) => (
-                        <li key={index} onClick={() => setTagsSorting(tag)}>
+                      allTags.map((department, index) => (
+                        <li
+                          key={index}
+                          onClick={() => setDepartmentsSorting(department)}
+                        >
                           <a className="dropdown-item" href="#">
-                            {tag.trim()}{' '}
+                            {department.trim()}{' '}
                           </a>
                         </li>
                       ))
                     ) : (
                       <li>
                         <a className="dropdown-item" href="#">
-                          No tags available
+                          No departments available
                         </a>
                       </li>
                     )}
@@ -207,7 +202,7 @@ export default function PostPage() {
               </div>
 
               <div className="col">
-                <p className="mb-2">Posted at</p>
+                <p className="mb-2">Salary</p>
                 <div className="dropdown">
                   <button
                     className="btn dropdown-toggle border border-secondary border-2 rounded"
@@ -220,26 +215,49 @@ export default function PostPage() {
                       width: '200px'
                     }}
                   >
-                    {postedAtSorting}
+                    {salarySorting}
                   </button>
                   <ul className="dropdown-menu" style={{ fontSize: '1.2rem' }}>
-                    <li onClick={() => setPostedAtSorting('sorting')}>
+                    <li onClick={() => setSalarySorting('sorting')}>
                       <a className="dropdown-item" href="#">
                         sorting
                       </a>
                     </li>
-                    <li onClick={() => setPostedAtSorting('oldest')}>
+                    <li onClick={() => setSalarySorting('minTomax')}>
                       <a className="dropdown-item" href="#">
-                        oldest
+                        min To max
                       </a>
                     </li>
-                    <li onClick={() => setPostedAtSorting('newest')}>
+                    <li onClick={() => setSalarySorting('maxTomin')}>
                       <a className="dropdown-item" href="#">
-                        newest
+                        max To min
                       </a>
                     </li>
                   </ul>
                 </div>
+              </div>
+
+              <div className="col">
+                <p className="mb-2">Create Employee</p>
+                <button
+                  type="button"
+                  className="btn btn-primary btn-lg"
+                  style={{
+                    paddingLeft: '2.5rem',
+                    paddingRight: '2.5rem',
+                    width: '200px'
+                  }}
+                  onClick={() => navigateToCreateEmployee()}
+                >
+                  <a
+                    className="btn btn-primary btn-lg text-decoration-none"
+                    style={{
+                      width: '100%'
+                    }}
+                  >
+                    Create
+                  </a>
+                </button>
               </div>
             </div>
           </div>
@@ -247,21 +265,30 @@ export default function PostPage() {
 
         {/* Post*/}
         <div className="row position-relative justify-content-evenly mt-5">
-          {data.map((post: any, index: number) => (
-            <div
-              key={post.id}
-              className="border border-primary border-2 col-md-5 p-5 mb-4 rounded-5"
-              style={{ height: '250px' }}
-              onClick={() => navigateToPostDatail(post.id)}
-              role="button"
-            >
-              <p className="text-decoration-none text-dark">
-                Title: {post.title}
-              </p>
-              <p className="text-secondary">Tags: {post.tags.join(', ')}</p>
-              <p>Post at: {post.postedAt}</p>
-            </div>
-          ))}
+          {data && data.length > 0 ? (
+            data.map((employee: any) => (
+              <div
+                key={employee.id}
+                className="border border-primary border-2 col-md-5 p-5 mb-4 rounded-5"
+                style={{ height: '250px' }}
+                onClick={() => navigateToEmployeeDetail(employee.id)}
+                role="button"
+              >
+                <p className="text-decoration-none text-dark">
+                  First name: {employee.firstName}
+                </p>
+                <p className="text-decoration-none text-dark">
+                  Last name: {employee.lastName}
+                </p>
+                <p className="text-secondary">
+                  Department: {employee.department}
+                </p>
+                <p>Salary: {employee.salary} THB</p>
+              </div>
+            ))
+          ) : (
+            <p>No data available</p>
+          )}
         </div>
 
         {/* Pagination */}

@@ -4,20 +4,20 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import 'css/main.min.css'
 import Image from 'next/image'
-import logo from '../../public/assets/logo.png'
 import Cookies from 'js-cookie'
 import Link from 'next/link'
+import navLogo from '../../public/assets/navLogo.svg'
 
 const Navbar = () => {
-  const [userName, setUserName] = useState<string>('Username');
+  const [userName, setUserName] = useState<string>('Username')
   const router = useRouter()
 
   useEffect(() => {
-    const cookieUserName = Cookies.get('userName');
+    const cookieUserName = Cookies.get('userName')
     if (cookieUserName !== undefined) {
-      setUserName(cookieUserName);
+      setUserName(cookieUserName)
     }
-  }, []);
+  }, [])
 
   const onLogout = () => {
     Cookies.remove('my_token_key')
@@ -32,12 +32,13 @@ const Navbar = () => {
     >
       <div className="container-fluid">
         <Image
-          src={logo}
-          width={110}
+          src={navLogo}
+          width={200}
           height={35}
           className="rounded-5"
-          alt="SkinX Logo"
+          alt="Video Support Logo"
         />
+        {/* <NavLogo/> */}
         <button
           className="navbar-toggler"
           type="button"
@@ -55,26 +56,9 @@ const Navbar = () => {
         >
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link className="nav-link" aria-current="page" href="/post">
+              <Link className="nav-link" aria-current="page" href="/employee">
                 Home
               </Link>
-            </li>
-            <li className="nav-item dropdown">
-              <p
-                className="nav-link dropdown-toggle text-secondary"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                {userName}
-              </p>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="#" onClick={onLogout}>
-                    Logout
-                  </a>
-                </li>
-              </ul>
             </li>
           </ul>
         </div>

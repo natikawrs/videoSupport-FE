@@ -35,17 +35,17 @@ const CustomModal: React.FC<CustomModalProps> = ({
             style={{
               backgroundColor: '#fff',
               padding: '20px',
-              borderRadius: '10px', // Increased border radius for a rounded look
+              borderRadius: '10px', 
               boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
-              border: '2px solid rgb(92, 212, 196)', // Added border with the specified color
-              width: '400px' // Set a fixed width for the modal
+              border: '2px solid #993afc', 
+              width: '400px' 
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column', // Center items vertically
+                flexDirection: 'column', 
                 alignItems: 'center'
               }}
             >
@@ -67,8 +67,8 @@ const CustomModal: React.FC<CustomModalProps> = ({
                   onClick={closeModal}
                   style={{
                     padding: '8px 20px',
-                    color: 'black', // Set the text color to black
-                    border: '2px solid #e7a191',
+                    color: 'black',
+                    border: '2px solid ',
                     borderRadius: '5px',
                     cursor: 'pointer'
                   }}
