@@ -9,15 +9,7 @@ import Link from 'next/link'
 import navLogo from '../../public/assets/navLogo.svg'
 
 const Navbar = () => {
-  const [userName, setUserName] = useState<string>('Username')
   const router = useRouter()
-
-  useEffect(() => {
-    const cookieUserName = Cookies.get('userName')
-    if (cookieUserName !== undefined) {
-      setUserName(cookieUserName)
-    }
-  }, [])
 
   const onLogout = () => {
     Cookies.remove('my_token_key')

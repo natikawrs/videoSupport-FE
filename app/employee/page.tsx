@@ -283,7 +283,7 @@ export default function EmployeePage() {
                 <p className="text-secondary">
                   Department: {employee.department}
                 </p>
-                <p>Salary: {employee.salary} THB</p>
+                <p>Salary: {employee.salary} €</p>
               </div>
             ))
           ) : (

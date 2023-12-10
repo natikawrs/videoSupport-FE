@@ -27,33 +27,26 @@ export default function EmployeeDetailPage({ params }) {
   })
 
   const handleInputChange = (e, field) => {
-    // Check if the value is an empty string
-    if (e.target.value === '') {
-      setData((prevData) => ({
-        ...prevData,
-        [field]: '' // Set the field to an empty string
-      }));
-    } else if (field === 'salary') {
-      // If the field is 'salary', convert the value to a number
-      const numericValue = Number(e.target.value);
-      if (!isNaN(numericValue)) {
-        // Update the field in the updatedData state as a number
-        setUpdatedData((prevData) => ({
-          ...prevData,
-          [field]: numericValue
-        }));
-      } else {
-        console.error('Salary must be a valid number');
-      }
-    } else {
-      // Update the field in the updatedData state
+    const inputValue = e.target.value
+    const salaryInputValue = Number(e.target.value)
+
+    if (field === 'salary') {
       setUpdatedData((prevData) => ({
         ...prevData,
-        [field]: e.target.value
-      }));
+        [field]: salaryInputValue
+      }))
+    } else {
+      setUpdatedData((prevData) => ({
+        ...prevData,
+        [field]: inputValue
+      }))
     }
-  };
-  
+
+    setData((prevData) => ({
+      ...prevData,
+      [field]: '' // Set the field to an empty string
+    }))
+  }
 
   const openModal = (errorMessage) => {
     setError(errorMessage)
@@ -131,7 +124,7 @@ export default function EmployeeDetailPage({ params }) {
   }
 
   useEffect(() => {
-      // API endpoint for get employee by id
+    // API endpoint for get employee by id
     const apiUrl = `http://localhost:4000/employees/getEmployeeById/${params.employeeId}`
     // Function to fetch data from the API
     const fetchData = async () => {
@@ -239,14 +232,11 @@ export default function EmployeeDetailPage({ params }) {
               {/* Centering the button */}
               <button
                 type="button"
-                className="btn btn-primary btn-lg"
+                className="btn btn-lg btn-primary border border-primary"
                 style={{ marginLeft: '1rem', marginRight: '1rem' }}
                 onClick={handleUpdateEmployee}
               >
-                <a
-                  className="btn btn-primary btn-lg text-decoration-none"
-                  style={{ paddingLeft: '2rem', paddingRight: '2rem' }}
-                >
+                <a className="btn btn-primary btn-lg text-decoration-none">
                   Update Employee
                 </a>
               </button>

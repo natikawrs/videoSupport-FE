@@ -8,7 +8,7 @@ const Footer = () => {
   return (
     <footer
       className="text-center text-lg-start bg-secondary text-muted"
-      style={{ padding: '1rem 19rem' }}
+      style={{  paddingLeft: '10rem', paddingRight: '10rem'}}
     >
       {/* Image */}
       <span className="me-3">
